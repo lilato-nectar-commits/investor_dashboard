@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nectar Investor Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        teal: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            300: '#5eead4',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .nav-item { transition: all 0.2s; cursor: pointer; }
+        .nav-item:hover { background: rgba(20, 184, 166, 0.1); }
+        .nav-item.active { background: rgba(20, 184, 166, 0.15); border-left: 3px solid #14b8a6; }
+        .card { transition: all 0.2s; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .section { display: none; }
+        .section.active { display: block; }
+        .badge { padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 500; }
+        .badge-individual { background: #dbeafe; color: #1e40af; }
+        .badge-entity { background: #fef3c7; color: #92400e; }
+        .badge-trust { background: #d1fae5; color: #065f46; }
+        .badge-joint { background: #ede9fe; color: #5b21b6; }
+        .rate-badge { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); color: white; }
+        table { border-collapse: separate; border-spacing: 0; }
+        th { position: sticky; top: 0; background: #f9fafb; z-index: 10; }
+        .table-container { max-height: 500px; overflow-y: auto; }
+        .stat-card { background: linear-gradient(135deg, #ffffff 0%, #f0fdfa 100%); }
+        .sidebar { background: linear-gradient(180deg, #1f2937 0%, #111827 100%); }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Sidebar -->
+    <div class="fixed left-0 top-0 h-full w-64 sidebar shadow-xl z-50">
+        <div class="p-6 border-b border-gray-700">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-teal-400 to-teal-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-lg">N</span>
+                </div>
+                <div>
+                    <h1 class="font-bold text-white">Nectar</h1>
+                    <p class="text-xs text-gray-400">Investor Platform</p>
+                </div>
+            </div>
+        </div>
+        <nav class="p-4">
+            <ul class="space-y-1">
+                <li>
+                    <div onclick="showSection('dashboard')" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" data-section="dashboard">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                        <span>Dashboard</span>
+                    </div>
+                </li>
+                <li>
+                    <div onclick="showSection('investors')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" data-section="investors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <span>Investors</span>
+                    </div>
+                </li>
+                <li>
+                    <div onclick="showSection('fund2')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" data-section="fund2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        <span>Fund 2 LLC</span>
+                    </div>
+                </li>
+                <li>
+                    <div onclick="showSection('notes')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" data-section="notes">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <span>Promissory Notes</span>
+                    </div>
+                </li>
+                <li>
+                    <div onclick="showSection('reoc')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" data-section="reoc">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                        <span>REOC</span>
+                    </div>
+                </li>
+                <li>
+                    <div onclick="showSection('distributions')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300" data-section="distributions">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        <span>Distributions</span>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700">
+            <p class="text-xs text-gray-500 text-center">Data from Investor_Tape.xlsx</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64 p-8">
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section active">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
+                <p class="text-gray-500 mt-1">Overview of all investments and performance</p>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="stat-card card rounded-xl p-6 border border-teal-100 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        </div>
+                        <span class="text-teal-600 text-sm font-medium">Active</span>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-800" id="totalInvestors">--</p>
+                    <p class="text-gray-500 text-sm mt-1">Total Investors</p>
+                </div>
+                <div class="stat-card card rounded-xl p-6 border border-teal-100 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-800" id="totalAUM">--</p>
+                    <p class="text-gray-500 text-sm mt-1">Total AUM</p>
+                </div>
+                <div class="stat-card card rounded-xl p-6 border border-teal-100 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-800" id="avgRate">--</p>
+                    <p class="text-gray-500 text-sm mt-1">Weighted Avg Rate</p>
+                </div>
+                <div class="stat-card card rounded-xl p-6 border border-teal-100 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-800" id="quarterlyDist">--</p>
+                    <p class="text-gray-500 text-sm mt-1">Est. Quarterly Distribution</p>
+                </div>
+            </div>
+
+            <!-- Product Breakdown -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl p-6 shadow-sm border">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-teal-500 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Nectar Fund 2 LLC</h3>
+                            <p class="text-xs text-gray-500">12-16% Annual</p>
+                        </div>
+                    </div>
+                    <p class="text-2xl font-bold text-gray-800" id="fund2Total">--</p>
+                    <p class="text-sm text-gray-500"><span id="fund2Count">--</span> investments</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-sm border">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Promissory Notes</h3>
+                            <p class="text-xs text-gray-500">18-20% Annual</p>
+                        </div>
+                    </div>
+                    <p class="text-2xl font-bold text-gray-800" id="notesTotal">--</p>
+                    <p class="text-sm text-gray-500"><span id="notesCount">--</span> notes</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-sm border">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">REOC LLC</h3>
+                            <p class="text-xs text-gray-500">12-14% Annual</p>
+                        </div>
+                    </div>
+                    <p class="text-2xl font-bold text-gray-800" id="reocTotal">--</p>
+                    <p class="text-sm text-gray-500"><span id="reocCount">--</span> investments</p>
+                </div>
+            </div>
+
+            <!-- Upcoming Maturities -->
+            <div class="bg-white rounded-xl shadow-sm border">
+                <div class="p-6 border-b">
+                    <h3 class="font-semibold text-gray-800">Upcoming Maturities</h3>
+                    <p class="text-sm text-gray-500">Investments maturing in the next 24 months</p>
+                </div>
+                <div class="p-6">
+                    <div class="table-container">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="text-left text-xs text-gray-500 uppercase tracking-wider">
+                                    <th class="pb-3 pr-4">Investor</th>
+                                    <th class="pb-3 pr-4">Product</th>
+                                    <th class="pb-3 pr-4">Principal</th>
+                                    <th class="pb-3 pr-4">Rate</th>
+                                    <th class="pb-3">Maturity Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="maturitiesTable" class="text-sm">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investors Section -->
+        <div id="investors" class="section">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Investors</h2>
+                    <p class="text-gray-500 mt-1">All investor accounts</p>
+                </div>
+                <div class="flex gap-3">
+                    <input type="text" id="investorSearch" placeholder="Search investors..." 
+                           class="px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                           onkeyup="filterInvestors()">
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border">
+                <div class="table-container">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-left text-xs text-gray-500 uppercase tracking-wider bg-gray-50">
+                                <th class="p-4">Investor</th>
+                                <th class="p-4">Account Type</th>
+                                <th class="p-4">Business Entity</th>
+                                <th class="p-4">Total Invested</th>
+                                <th class="p-4">Products</th>
+                            </tr>
+                        </thead>
+                        <tbody id="investorsTable" class="divide-y">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fund 2 Section -->
+        <div id="fund2" class="section">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Nectar Fund 2 LLC</h2>
+                    <p class="text-gray-500 mt-1">All Fund 2 investments (12-16% annual returns)</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border">
+                <div class="table-container">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-left text-xs text-gray-500 uppercase tracking-wider bg-gray-50">
+                                <th class="p-4">Investor</th>
+                                <th class="p-4">Account Type</th>
+                                <th class="p-4">Principal</th>
+                                <th class="p-4">Rate</th>
+                                <th class="p-4">Reinvest %</th>
+                                <th class="p-4">Investment Date</th>
+                                <th class="p-4">Deployment Date</th>
+                                <th class="p-4">Side Letter</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fund2Table" class="divide-y text-sm">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Promissory Notes Section -->
+        <div id="notes" class="section">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Promissory Notes</h2>
+                    <p class="text-gray-500 mt-1">All promissory note investments (18-20% annual returns)</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border">
+                <div class="table-container">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-left text-xs text-gray-500 uppercase tracking-wider bg-gray-50">
+                                <th class="p-4">Investor</th>
+                                <th class="p-4">Account Type</th>
+                                <th class="p-4">Principal</th>
+                                <th class="p-4">Rate</th>
+                                <th class="p-4">Investment Date</th>
+                                <th class="p-4">Maturity Date</th>
+                                <th class="p-4">Final Distribution</th>
+                            </tr>
+                        </thead>
+                        <tbody id="notesTable" class="divide-y text-sm">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- REOC Section -->
+        <div id="reoc" class="section">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Nectar 12% Unlevered REOC LLC</h2>
+                    <p class="text-gray-500 mt-1">All REOC investments (12-14% annual returns)</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border">
+                <div class="table-container">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-left text-xs text-gray-500 uppercase tracking-wider bg-gray-50">
+                                <th class="p-4">Investor</th>
+                                <th class="p-4">Account Type</th>
+                                <th class="p-4">Principal</th>
+                                <th class="p-4">Rate</th>
+                                <th class="p-4">Reinvest %</th>
+                                <th class="p-4">Deployment Date</th>
+                                <th class="p-4">Maturity Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reocTable" class="divide-y text-sm">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Distributions Section -->
+        <div id="distributions" class="section">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Distribution Calculator</h2>
+                    <p class="text-gray-500 mt-1">Calculate quarterly distributions for all investments</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl p-6 shadow-sm border">
+                    <h3 class="font-semibold text-gray-800 mb-4">Select Quarter</h3>
+                    <select id="quarterSelect" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none" onchange="calculateDistributions()">
+                        <option value="Q1-2025">Q1 2025 (Jan - Mar)</option>
+                        <option value="Q2-2025">Q2 2025 (Apr - Jun)</option>
+                        <option value="Q3-2025">Q3 2025 (Jul - Sep)</option>
+                        <option value="Q4-2025">Q4 2025 (Oct - Dec)</option>
+                        <option value="Q1-2026" selected>Q1 2026 (Jan - Mar)</option>
+                        <option value="Q2-2026">Q2 2026 (Apr - Jun)</option>
+                        <option value="Q3-2026">Q3 2026 (Jul - Sep)</option>
+                        <option value="Q4-2026">Q4 2026 (Oct - Dec)</option>
+                        <option value="Q1-2027">Q1 2027 (Jan - Mar)</option>
+                        <option value="Q2-2027">Q2 2027 (Apr - Jun)</option>
+                        <option value="Q3-2027">Q3 2027 (Jul - Sep)</option>
+                        <option value="Q4-2027">Q4 2027 (Oct - Dec)</option>
+                    </select>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-sm border">
+                    <h3 class="font-semibold text-gray-800 mb-2">Total Cash Distribution</h3>
+                    <p class="text-3xl font-bold text-teal-600" id="totalCashDist">$0.00</p>
+                    <p class="text-xs text-gray-500 mt-1">Interest + Principal Returns</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-sm border">
+                    <h3 class="font-semibold text-gray-800 mb-2">Principal Returns</h3>
+                    <p class="text-3xl font-bold text-amber-600" id="totalPrincipalReturn">$0.00</p>
+                    <p class="text-xs text-gray-500 mt-1">Promissory Notes Maturing</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-sm border">
+                    <h3 class="font-semibold text-gray-800 mb-2">Total Reinvestment</h3>
+                    <p class="text-3xl font-bold text-gray-700" id="totalReinvest">$0.00</p>
+                    <p class="text-xs text-gray-500 mt-1">Interest Reinvested</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border">
+                <div class="p-6 border-b">
+                    <h3 class="font-semibold text-gray-800">Distribution Details</h3>
+                    <p class="text-sm text-gray-500">Promissory notes return principal at maturity</p>
+                </div>
+                <div class="table-container">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-left text-xs text-gray-500 uppercase tracking-wider bg-gray-50">
+                                <th class="p-4">Investor</th>
+                                <th class="p-4">Product</th>
+                                <th class="p-4">Principal</th>
+                                <th class="p-4">Rate</th>
+                                <th class="p-4">Status</th>
+                                <th class="p-4">Interest</th>
+                                <th class="p-4">Principal Return</th>
+                                <th class="p-4">Cash Out</th>
+                                <th class="p-4">Reinvest</th>
+                            </tr>
+                        </thead>
+                        <tbody id="distributionsTable" class="divide-y text-sm">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Investment Data from Excel "Fund  Promissory Note" sheet
+        const investmentData = [
+            // REOC Investments
+            { type: "Nectar 12% Unlevered REOC LLC", accountType: "Individual", firstName: "John", lastName: "Condon", entity: "Condon", rate: 0.14, reinvest: 1, reinvestCoupon: 0.12, principal: 200000, investmentDate: null, deploymentDate: "11/21/2023", maturityDate: "2027-03-31", finalDistDate: "2027-04-15" },
+            { type: "Nectar 12% Unlevered REOC LLC", accountType: "Individual", firstName: "Bill", lastName: "Stanley", entity: "Stanley", rate: 0.14, reinvest: 1, reinvestCoupon: 0.12, principal: 100000, investmentDate: null, deploymentDate: "2023-12-23", maturityDate: null, finalDistDate: null },
+            { type: "Nectar 12% Unlevered REOC LLC", accountType: "Individual", firstName: "Lawrence", lastName: "Jarvis", entity: "Jarvis", rate: 0.12, reinvest: 1, reinvestCoupon: 0.12, principal: 50000, investmentDate: null, deploymentDate: "2024-03-18", maturityDate: "2027-07-01", finalDistDate: "2027-07-15" },
+            
+            // Fund 2 Investments
+            { type: "Nectar Fund 2 LLC", accountType: "Trust", firstName: "Ross", lastName: "Levin", entity: "Diamond Advisors Solo 401K Trust", rate: 0.16, reinvest: 0, reinvestCoupon: null, principal: 25000, investmentDate: "2022-07-29", deploymentDate: "2022-08-22", maturityDate: null, finalDistDate: null, sideLetter: false },
+            { type: "Nectar Fund 2 LLC", accountType: "Individual", firstName: "Todd", lastName: "Luepke", entity: "Luepke", rate: 0.16, reinvest: 0, reinvestCoupon: null, principal: 33000, investmentDate: "2022-08-01", deploymentDate: "2022-10-01", maturityDate: null, finalDistDate: null, sideLetter: false },
+            { type: "Nectar Fund 2 LLC", accountType: "Entity", firstName: "Tyson", lastName: "Miller", entity: "LFI Farm Team, LLC", rate: 0.16, reinvest: 0, reinvestCoupon: null, principal: 50000, investmentDate: "2022-09-06", deploymentDate: "2022-10-01", maturityDate: null, finalDistDate: null, sideLetter: false },
+            { type: "Nectar Fund 2 LLC", accountType: "Individual", firstName: "Denise", lastName: "Logan", entity: "Logan", rate: 0.16, reinvest: 0.5, reinvestCoupon: null, principal: 1020413.05, investmentDate: "2022-09-06", deploymentDate: "2022-11-30", maturityDate: null, finalDistDate: null, sideLetter: false },
+            { type: "Nectar Fund 2 LLC", accountType: "Individual", firstName: "Justine", lastName: "Corrado", entity: "Corrado", rate: 0.16, reinvest: 0, reinvestCoupon: null, principal: 61224, investmentDate: "2024-10-01", deploymentDate: "2024-10-01", maturityDate: null, finalDistDate: null, sideLetter: false },
+            { type: "Nectar Fund 2 LLC", accountType: "Entity", firstName: "Robert", lastName: "Swarthout", entity: "SHC Ventures III LLC", rate: 0.16, reinvest: 1, reinvestCoupon: 0.12, principal: 61551.36, investmentDate: "2022-11-04", deploymentDate: "2022-11-30", maturityDate: null, finalDistDate: null, sideLetter: false },
+            { type: "Nectar Fund 2 LLC", accountType: "Joint", firstName: "Patrick", lastName: "Obeid", entity: "Patrick Obeid + Georges Bassous", rate: 0.16, reinvest: 0, reinvestCoupon: null, principal: 27322.16, investmentDate: "2022-11-09", deploymentDate: "2022-11-30", maturityDate: null, finalDistDate: null, sideLetter: false },
+            { type: "Nectar Fund 2 LLC", accountType: "Individual", firstName: "Denise", lastName: "Logan", entity: "Logan", rate: 0.12, reinvest: 0.5, reinvestCoupon: null, principal: 20493.56, investmentDate: "2022-10-24", deploymentDate: "2022-11-30", maturityDate: null, finalDistDate: null, sideLetter: false },
+            { type: "Nectar Fund 2 LLC", accountType: "Individual", firstName: "Bryan", lastName: "Devenny", entity: "Devenny", rate: 0.12, reinvest: 0, reinvestCoupon: null, principal: 125000, investmentDate: "2023-04-14", deploymentDate: null, maturityDate: null, finalDistDate: null, sideLetter: false },
+            { type: "Nectar Fund 2 LLC", accountType: "Entity", firstName: "Brent", lastName: "Sobol", entity: "Legacy Community Housing Corporation", rate: 0.12, reinvest: 1, reinvestCoupon: null, principal: 50000, investmentDate: "2023-09-01", deploymentDate: null, maturityDate: null, finalDistDate: null, sideLetter: false },
+            { type: "Nectar Fund 2 LLC", accountType: "Individual", firstName: "Andrew", lastName: "McConnell", entity: "McConnell", rate: 0.14, reinvest: 0, reinvestCoupon: null, principal: 100000, investmentDate: "2023-09-20", deploymentDate: null, maturityDate: null, finalDistDate: null, sideLetter: false },
+            { type: "Nectar Fund 2 LLC", accountType: "Individual", firstName: "Kelli", lastName: "Turner", entity: "Turner", rate: 0.14, reinvest: 0, reinvestCoupon: null, principal: 200000, investmentDate: "2024-01-31", deploymentDate: "2024-02-29", maturityDate: null, finalDistDate: null, sideLetter: true },
+            { type: "Nectar Fund 2 LLC", accountType: "Trust", firstName: "Ross", lastName: "Levin", entity: "Diamond Advisors Solo 401K Trust", rate: 0.14, reinvest: 0, reinvestCoupon: null, principal: 25000, investmentDate: "2024-02-07", deploymentDate: null, maturityDate: null, finalDistDate: null, sideLetter: false },
+            { type: "Nectar Fund 2 LLC", accountType: "Individual", firstName: "Kevin", lastName: "Bockman", entity: "Bockman", rate: 0.12, reinvest: 0, reinvestCoupon: null, principal: 100000, investmentDate: "2024-07-17", deploymentDate: null, maturityDate: null, finalDistDate: null, sideLetter: false },
+            { type: "Nectar Fund 2 LLC", accountType: "Individual", firstName: "Kendra", lastName: "Letang", entity: "Letang", rate: 0.12, reinvest: 0, reinvestCoupon: null, principal: 100000, investmentDate: "2024-09-11", deploymentDate: "2024-09-24", maturityDate: "2025-09-30", finalDistDate: "2025-10-15", sideLetter: true },
+            { type: "Nectar Fund 2 LLC", accountType: "Individual", firstName: "Kendra", lastName: "Letang", entity: "Letang", rate: 0.12, reinvest: 0, reinvestCoupon: null, principal: 100000, investmentDate: "2024-09-11", deploymentDate: null, maturityDate: null, finalDistDate: null, sideLetter: false },
+            { type: "Nectar Fund 2 LLC", accountType: "Individual", firstName: "Nathan", lastName: "Wenzel", entity: "Wenzel", rate: 0.12, reinvest: 0, reinvestCoupon: null, principal: 200000, investmentDate: "2024-09-23", deploymentDate: "2024-09-27", maturityDate: "2027-09-30", finalDistDate: "2027-10-15", sideLetter: false },
+            { type: "Nectar Fund 2 LLC", accountType: "Individual", firstName: "Michael", lastName: "Besmer", entity: "Besmer", rate: 0.12, reinvest: 1, reinvestCoupon: 0.12, principal: 50000, investmentDate: "2024-09-24", deploymentDate: "2024-10-02", maturityDate: null, finalDistDate: null, sideLetter: false },
+            { type: "Nectar Fund 2 LLC", accountType: "Individual", firstName: "Christopher", lastName: "Clark", entity: "Clark", rate: 0.12, reinvest: 0, reinvestCoupon: 0, principal: 25000, investmentDate: "2024-11-25", deploymentDate: "2024-12-23", maturityDate: null, finalDistDate: null, sideLetter: false },
+            
+            // Promissory Notes
+            { type: "Promissory Note", accountType: "Individual", firstName: "Bruce", lastName: "Jaffe", entity: "Jaffe", rate: 0.18, reinvest: 0, reinvestCoupon: null, principal: 50000, investmentDate: "2023-02-22", deploymentDate: "2024-12-20", maturityDate: "2026-03-23", finalDistDate: null },
+            { type: "Promissory Note", accountType: "Individual", firstName: "James", lastName: "Rapperport", entity: "Rapperport", rate: 0.18, reinvest: 0, reinvestCoupon: null, principal: 60000, investmentDate: "2023-02-22", deploymentDate: "2023-03-24", maturityDate: "2026-02-22", finalDistDate: "2026-03-24" },
+            { type: "Promissory Note", accountType: "Entity", firstName: "Brian", lastName: "Jacobs", entity: "Moai Capital, LLC", rate: 0.18, reinvest: 0, reinvestCoupon: null, principal: 100000, investmentDate: "2023-02-22", deploymentDate: "2023-03-24", maturityDate: "2026-02-22", finalDistDate: "2026-03-24" },
+            { type: "Promissory Note", accountType: "Individual", firstName: "Michael", lastName: "Apker", entity: "Apker", rate: 0.18, reinvest: 0, reinvestCoupon: null, principal: 100000, investmentDate: "2023-02-22", deploymentDate: "2023-03-24", maturityDate: "2026-02-22", finalDistDate: "2026-03-24" },
+            { type: "Promissory Note", accountType: "Individual", firstName: "Christopher", lastName: "Winston", entity: "Winston", rate: 0.20, reinvest: 0, reinvestCoupon: null, principal: 50000, investmentDate: "2023-02-24", deploymentDate: "2023-03-26", maturityDate: "2026-02-24", finalDistDate: "2026-03-25" },
+            { type: "Promissory Note", accountType: "Individual", firstName: "Edward", lastName: "Condon", entity: "Condon", rate: 0.20, reinvest: 0, reinvestCoupon: null, principal: 340000, investmentDate: "2023-05-22", deploymentDate: "2023-06-21", maturityDate: "2026-06-30", finalDistDate: "2026-06-30" },
+            { type: "Promissory Note", accountType: "Individual", firstName: "Keith", lastName: "Lashier", entity: "Lashier", rate: 0.20, reinvest: 0, reinvestCoupon: null, principal: 15000, investmentDate: "2023-07-31", deploymentDate: "2023-08-30", maturityDate: "2026-07-31", finalDistDate: "2026-08-31" },
+            { type: "Promissory Note", accountType: "Individual", firstName: "Kevin", lastName: "Lowe", entity: "Lowe", rate: 0.20, reinvest: 0, reinvestCoupon: null, principal: 200000, investmentDate: "2023-08-18", deploymentDate: "2023-09-18", maturityDate: "2026-08-18", finalDistDate: "2026-09-18" },
+            { type: "Promissory Note", accountType: "Individual", firstName: "Shantel", lastName: "Kriss", entity: "Kriss", rate: 0.20, reinvest: 0, reinvestCoupon: null, principal: 50000, investmentDate: "2023-09-01", deploymentDate: "2023-10-01", maturityDate: "2026-09-01", finalDistDate: "2026-10-01" },
+            { type: "Promissory Note", accountType: "Individual", firstName: "David", lastName: "Leeks", entity: "Leeks", rate: 0.20, reinvest: 0, reinvestCoupon: null, principal: 100000, investmentDate: "2023-10-06", deploymentDate: "2023-11-06", maturityDate: "2026-10-06", finalDistDate: "2026-11-06" },
+            { type: "Promissory Note", accountType: "Individual", firstName: "Jerralyn", lastName: "Winston", entity: "Winston", rate: 0.20, reinvest: 0, reinvestCoupon: null, principal: 30000, investmentDate: "2024-03-15", deploymentDate: "2024-04-15", maturityDate: "2027-03-15", finalDistDate: "2027-04-15" },
+            { type: "Promissory Note", accountType: "Individual", firstName: "Adam", lastName: "Roston", entity: "Roston", rate: 0.20, reinvest: 0, reinvestCoupon: null, principal: 100000, investmentDate: "2024-12-19", deploymentDate: null, maturityDate: "2027-12-19", finalDistDate: null }
+        ];
+
+        // Helper Functions
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
+        }
+
+        function formatPercent(rate) {
+            return (rate * 100).toFixed(0) + '%';
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '—';
+            const date = new Date(dateStr);
+            if (isNaN(date)) return dateStr;
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function getAccountTypeBadge(type) {
+            const badgeClass = {
+                'Individual': 'badge-individual',
+                'Entity': 'badge-entity',
+                'Trust': 'badge-trust',
+                'Joint': 'badge-joint'
+            }[type] || 'badge-individual';
+            return `<span class="badge ${badgeClass}">${type}</span>`;
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            // Update nav
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+        }
+
+        // Calculate and display dashboard stats
+        function updateDashboard() {
+            // Total investors (unique by first+last name)
+            const uniqueInvestors = new Set(investmentData.map(i => `${i.firstName} ${i.lastName}`));
+            document.getElementById('totalInvestors').textContent = uniqueInvestors.size;
+
+            // Total AUM
+            const totalAUM = investmentData.reduce((sum, i) => sum + i.principal, 0);
+            document.getElementById('totalAUM').textContent = formatCurrency(totalAUM);
+
+            // Weighted average rate
+            const weightedRate = investmentData.reduce((sum, i) => sum + (i.principal * i.rate), 0) / totalAUM;
+            document.getElementById('avgRate').textContent = formatPercent(weightedRate);
+
+            // Quarterly distribution estimate
+            const quarterlyDist = totalAUM * (weightedRate / 4);
+            document.getElementById('quarterlyDist').textContent = formatCurrency(quarterlyDist);
+
+            // Product breakdowns
+            const fund2 = investmentData.filter(i => i.type === "Nectar Fund 2 LLC");
+            const notes = investmentData.filter(i => i.type === "Promissory Note");
+            const reoc = investmentData.filter(i => i.type === "Nectar 12% Unlevered REOC LLC");
+
+            document.getElementById('fund2Total').textContent = formatCurrency(fund2.reduce((s, i) => s + i.principal, 0));
+            document.getElementById('fund2Count').textContent = fund2.length;
+            document.getElementById('notesTotal').textContent = formatCurrency(notes.reduce((s, i) => s + i.principal, 0));
+            document.getElementById('notesCount').textContent = notes.length;
+            document.getElementById('reocTotal').textContent = formatCurrency(reoc.reduce((s, i) => s + i.principal, 0));
+            document.getElementById('reocCount').textContent = reoc.length;
+
+            // Upcoming maturities
+            const maturities = investmentData
+                .filter(i => i.maturityDate)
+                .sort((a, b) => new Date(a.maturityDate) - new Date(b.maturityDate))
+                .slice(0, 10);
+            
+            const maturitiesHtml = maturities.map(i => `
+                <tr class="hover:bg-gray-50">
+                    <td class="py-3 pr-4 font-medium">${i.firstName} ${i.lastName}</td>
+                    <td class="py-3 pr-4">${i.type.replace('Nectar ', '').replace(' LLC', '')}</td>
+                    <td class="py-3 pr-4">${formatCurrency(i.principal)}</td>
+                    <td class="py-3 pr-4"><span class="rate-badge badge">${formatPercent(i.rate)}</span></td>
+                    <td class="py-3">${formatDate(i.maturityDate)}</td>
+                </tr>
+            `).join('');
+            document.getElementById('maturitiesTable').innerHTML = maturitiesHtml;
+        }
+
+        // Populate investors table
+        function populateInvestors() {
+            const investorMap = new Map();
+            investmentData.forEach(inv => {
+                const key = `${inv.firstName} ${inv.lastName}`;
+                if (!investorMap.has(key)) {
+                    investorMap.set(key, {
+                        name: key,
+                        firstName: inv.firstName,
+                        lastName: inv.lastName,
+                        accountType: inv.accountType,
+                        entity: inv.entity,
+                        totalInvested: 0,
+                        products: new Set()
+                    });
+                }
+                const investor = investorMap.get(key);
+                investor.totalInvested += inv.principal;
+                investor.products.add(inv.type.replace('Nectar ', '').replace(' LLC', ''));
+            });
+
+            const investors = Array.from(investorMap.values()).sort((a, b) => b.totalInvested - a.totalInvested);
+            
+            const html = investors.map(inv => `
+                <tr class="hover:bg-gray-50">
+                    <td class="p-4">
+                        <div class="font-medium text-gray-900">${inv.name}</div>
+                    </td>
+                    <td class="p-4">${getAccountTypeBadge(inv.accountType)}</td>
+                    <td class="p-4 text-gray-600">${inv.entity !== inv.lastName ? inv.entity : '—'}</td>
+                    <td class="p-4 font-semibold text-gray-900">${formatCurrency(inv.totalInvested)}</td>
+                    <td class="p-4 text-gray-600">${Array.from(inv.products).join(', ')}</td>
+                </tr>
+            `).join('');
+            document.getElementById('investorsTable').innerHTML = html;
+        }
+
+        function filterInvestors() {
+            const search = document.getElementById('investorSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#investorsTable tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(search) ? '' : 'none';
+            });
+        }
+
+        // Populate Fund 2 table
+        function populateFund2() {
+            const fund2 = investmentData.filter(i => i.type === "Nectar Fund 2 LLC");
+            const html = fund2.map(i => `
+                <tr class="hover:bg-gray-50">
+                    <td class="p-4">
+                        <div class="font-medium text-gray-900">${i.firstName} ${i.lastName}</div>
+                        <div class="text-xs text-gray-500">${i.entity !== i.lastName ? i.entity : ''}</div>
+                    </td>
+                    <td class="p-4">${getAccountTypeBadge(i.accountType)}</td>
+                    <td class="p-4 font-semibold">${formatCurrency(i.principal)}</td>
+                    <td class="p-4"><span class="rate-badge badge">${formatPercent(i.rate)}</span></td>
+                    <td class="p-4">${i.reinvest ? formatPercent(i.reinvest) : '0%'}</td>
+                    <td class="p-4">${formatDate(i.investmentDate)}</td>
+                    <td class="p-4">${formatDate(i.deploymentDate)}</td>
+                    <td class="p-4">${i.sideLetter ? '<span class="text-teal-600 font-medium">Yes</span>' : '—'}</td>
+                </tr>
+            `).join('');
+            document.getElementById('fund2Table').innerHTML = html;
+        }
+
+        // Populate Notes table
+        function populateNotes() {
+            const notes = investmentData.filter(i => i.type === "Promissory Note");
+            const html = notes.map(i => `
+                <tr class="hover:bg-gray-50">
+                    <td class="p-4">
+                        <div class="font-medium text-gray-900">${i.firstName} ${i.lastName}</div>
+                        <div class="text-xs text-gray-500">${i.entity !== i.lastName ? i.entity : ''}</div>
+                    </td>
+                    <td class="p-4">${getAccountTypeBadge(i.accountType)}</td>
+                    <td class="p-4 font-semibold">${formatCurrency(i.principal)}</td>
+                    <td class="p-4"><span class="rate-badge badge">${formatPercent(i.rate)}</span></td>
+                    <td class="p-4">${formatDate(i.investmentDate)}</td>
+                    <td class="p-4">${formatDate(i.maturityDate)}</td>
+                    <td class="p-4">${formatDate(i.finalDistDate)}</td>
+                </tr>
+            `).join('');
+            document.getElementById('notesTable').innerHTML = html;
+        }
+
+        // Populate REOC table
+        function populateREOC() {
+            const reoc = investmentData.filter(i => i.type === "Nectar 12% Unlevered REOC LLC");
+            const html = reoc.map(i => `
+                <tr class="hover:bg-gray-50">
+                    <td class="p-4">
+                        <div class="font-medium text-gray-900">${i.firstName} ${i.lastName}</div>
+                    </td>
+                    <td class="p-4">${getAccountTypeBadge(i.accountType)}</td>
+                    <td class="p-4 font-semibold">${formatCurrency(i.principal)}</td>
+                    <td class="p-4"><span class="rate-badge badge">${formatPercent(i.rate)}</span></td>
+                    <td class="p-4">${i.reinvest ? formatPercent(i.reinvest) : '0%'}</td>
+                    <td class="p-4">${formatDate(i.deploymentDate)}</td>
+                    <td class="p-4">${formatDate(i.maturityDate)}</td>
+                </tr>
+            `).join('');
+            document.getElementById('reocTable').innerHTML = html;
+        }
+
+        // Get quarter date range
+        function getQuarterDates(quarterStr) {
+            const [q, year] = quarterStr.split('-');
+            const y = parseInt(year);
+            const quarters = {
+                'Q1': { start: new Date(y, 0, 1), end: new Date(y, 2, 31) },
+                'Q2': { start: new Date(y, 3, 1), end: new Date(y, 5, 30) },
+                'Q3': { start: new Date(y, 6, 1), end: new Date(y, 8, 30) },
+                'Q4': { start: new Date(y, 9, 1), end: new Date(y, 11, 31) }
+            };
+            return quarters[q];
+        }
+
+        // Check if investment is active during quarter
+        function isActiveInQuarter(investment, quarterStart, quarterEnd) {
+            // Get the start date (deployment or investment date)
+            const startDateStr = investment.deploymentDate || investment.investmentDate;
+            if (!startDateStr) return true; // If no start date, assume active
+            
+            const startDate = new Date(startDateStr);
+            
+            // Investment must have started before or during the quarter
+            if (startDate > quarterEnd) return false;
+            
+            // Check if already matured before this quarter
+            if (investment.maturityDate) {
+                const maturityDate = new Date(investment.maturityDate);
+                if (maturityDate < quarterStart) return false;
+            }
+            
+            return true;
+        }
+
+        // Check if maturity falls within quarter (for promissory notes)
+        function maturesInQuarter(investment, quarterStart, quarterEnd) {
+            if (!investment.maturityDate) return false;
+            const maturityDate = new Date(investment.maturityDate);
+            return maturityDate >= quarterStart && maturityDate <= quarterEnd;
+        }
+
+        // Calculate distributions
+        function calculateDistributions() {
+            const quarterStr = document.getElementById('quarterSelect').value;
+            const { start: quarterStart, end: quarterEnd } = getQuarterDates(quarterStr);
+            
+            let totalCash = 0;
+            let totalReinvest = 0;
+            let totalPrincipalReturn = 0;
+
+            const rows = investmentData.map(i => {
+                const isActive = isActiveInQuarter(i, quarterStart, quarterEnd);
+                const isMaturing = i.type === "Promissory Note" && maturesInQuarter(i, quarterStart, quarterEnd);
+                
+                // Calculate interest
+                let interestAmount = 0;
+                let principalReturn = 0;
+                let reinvestPct = i.reinvest || 0;
+                
+                if (isActive) {
+                    const quarterlyRate = i.rate / 4;
+                    interestAmount = i.principal * quarterlyRate;
+                }
+                
+                // For promissory notes maturing this quarter, add principal return
+                if (isMaturing) {
+                    principalReturn = i.principal;
+                }
+                
+                const grossAmount = interestAmount + principalReturn;
+                const reinvestAmount = interestAmount * reinvestPct; // Only interest can be reinvested
+                const cashAmount = interestAmount - reinvestAmount + principalReturn; // Principal always paid as cash
+                
+                if (isActive || isMaturing) {
+                    totalCash += cashAmount;
+                    totalReinvest += reinvestAmount;
+                    if (isMaturing) totalPrincipalReturn += principalReturn;
+                }
+
+                // Determine row status
+                let statusBadge = '';
+                if (!isActive && !isMaturing) {
+                    statusBadge = '<span class="badge bg-gray-100 text-gray-500">Inactive</span>';
+                } else if (isMaturing) {
+                    statusBadge = '<span class="badge bg-amber-100 text-amber-700">Matures</span>';
+                } else {
+                    statusBadge = '<span class="badge bg-green-100 text-green-700">Active</span>';
+                }
+
+                return {
+                    html: `
+                        <tr class="hover:bg-gray-50 ${!isActive && !isMaturing ? 'opacity-40' : ''}">
+                            <td class="p-4 font-medium">${i.firstName} ${i.lastName}</td>
+                            <td class="p-4 text-gray-600">${i.type.replace('Nectar ', '').replace(' LLC', '')}</td>
+                            <td class="p-4">${formatCurrency(i.principal)}</td>
+                            <td class="p-4"><span class="rate-badge badge">${formatPercent(i.rate)}</span></td>
+                            <td class="p-4">${statusBadge}</td>
+                            <td class="p-4 font-medium">${isActive || isMaturing ? formatCurrency(interestAmount) : '—'}</td>
+                            <td class="p-4 font-medium ${isMaturing ? 'text-amber-600' : ''}">${isMaturing ? formatCurrency(principalReturn) : '—'}</td>
+                            <td class="p-4 text-teal-600 font-medium">${isActive || isMaturing ? formatCurrency(cashAmount) : '—'}</td>
+                            <td class="p-4 text-gray-700 font-medium">${isActive ? formatCurrency(reinvestAmount) : '—'}</td>
+                        </tr>
+                    `,
+                    isActive: isActive || isMaturing,
+                    isMaturing: isMaturing
+                };
+            });
+
+            // Sort: active first, then maturing, then inactive
+            rows.sort((a, b) => {
+                if (a.isMaturing && !b.isMaturing) return -1;
+                if (!a.isMaturing && b.isMaturing) return 1;
+                if (a.isActive && !b.isActive) return -1;
+                if (!a.isActive && b.isActive) return 1;
+                return 0;
+            });
+
+            document.getElementById('distributionsTable').innerHTML = rows.map(r => r.html).join('');
+            document.getElementById('totalCashDist').textContent = formatCurrency(totalCash);
+            document.getElementById('totalReinvest').textContent = formatCurrency(totalReinvest);
+            
+            // Update principal return display if exists
+            const principalEl = document.getElementById('totalPrincipalReturn');
+            if (principalEl) {
+                principalEl.textContent = formatCurrency(totalPrincipalReturn);
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDashboard();
+            populateInvestors();
+            populateFund2();
+            populateNotes();
+            populateREOC();
+            calculateDistributions();
+        });
+    </script>
+</body>
+</html>
